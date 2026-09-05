@@ -1,0 +1,11 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/HealthGrid.Api/HealthGrid.Api.csproj" />
+    <Project Path="src/HealthGrid.Application/HealthGrid.Application.csproj" />
+    <Project Path="src/HealthGrid.Domain/HealthGrid.Domain.csproj" />
+    <Project Path="src/HealthGrid.Infrastructure/HealthGrid.Infrastructure.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/HealthGrid.Api.Tests/HealthGrid.Api.Tests.csproj" />
+  </Folder>
+</Solution>

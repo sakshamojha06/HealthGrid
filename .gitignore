@@ -1,0 +1,121 @@
+# ---------------------------------------------
+# .NET / C#
+# ---------------------------------------------
+[Bb]in/
+[Oo]bj/
+[Oo]ut/
+[Ll]og/
+[Ll]ogs/
+
+# Build results
+[Dd]ebug/
+[Dd]ebugPublic/
+[Rr]elease/
+[Rr]eleases/
+x64/
+x86/
+[Ww][Ii][Nn]32/
+[Aa][Rr][Mm]/
+[Aa][Rr][Mm]64/
+bld/
+[Bb]uild/
+[Bb]uilds/
+publish/
+[Pp]ublish/
+
+# .NET / NuGet
+*.nupkg
+*.snupkg
+project.lock.json
+project.fragment.lock.json
+artifacts/
+.packages/
+*.nuget.props
+*.nuget.targets
+
+# MSBuild / build artifacts
+*.binlog
+*.tlog
+*.dll
+*.exe
+*.pdb
+*.cache
+*.user
+*.suo
+*.userprefs
+*.rsuser
+*.sln.docstates
+StyleCopReport.xml
+TestResults/
+[Tt]est[Rr]esult*/
+coverage*.json
+coverage*.xml
+coverage*.info
+*.coverage
+*.coveragexml
+
+# ---------------------------------------------
+# ASP.NET Core
+# ---------------------------------------------
+appsettings.*.local.json
+*.mdf
+*.ldf
+*.ndf
+wwwroot/dist/
+
+# User secrets are stored outside the repo, but ignore any local ones
+secrets.json
+
+# ---------------------------------------------
+# EF Core
+# ---------------------------------------------
+*.db
+*.db-shm
+*.db-wal
+*.sqlite
+*.sqlite3
+
+# ---------------------------------------------
+# IDE / Editor
+# ---------------------------------------------
+.vs/
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Rider
+_ReSharper*/
+*.DotSettings.user
+
+# ---------------------------------------------
+# OS
+# ---------------------------------------------
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ---------------------------------------------
+# UI (node-based front end)
+# ---------------------------------------------
+node_modules/
+dist/
+build/
+.next/
+.nuxt/
+.cache/
+*.local
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+.env
+.env.*
+!.env.example
+
+# ---------------------------------------------
+# Misc
+# ---------------------------------------------
+*.log
+*.tmp
