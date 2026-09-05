@@ -1,0 +1,82 @@
+<hg-page-header title="Medicine request" subtitle="Request and transfer detail">
+  <a mat-button routerLink="/requests"><mat-icon>arrow_back</mat-icon> Back</a>
+</hg-page-header>
+
+<hg-data-state [loading]="loading()" [error]="error()" />
+
+@if (request(); as r) {
+  <div class="detail">
+    <mat-card>
+      <mat-card-content>
+        <div class="route">
+          <div><small>From</small><strong>{{ r.sourcePhcName }}</strong></div>
+          <mat-icon>east</mat-icon>
+          <div><small>To</small><strong>{{ r.destinationPhcName }}</strong></div>
+          <span class="status" [attr.data-status]="r.status">{{ r.status }}</span>
+        </div>
+        <div class="meta">
+          Requested by {{ r.requestedByName }} · {{ r.createdAtUtc | date: 'medium' }}
+          @if (r.neededByDate) { · needed by {{ r.neededByDate | date: 'mediumDate' }} }
+        </div>
+        @if (r.notes) { <p class="notes">"{{ r.notes }}"</p> }
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card>
+      <mat-card-header><mat-card-title>Items</mat-card-title></mat-card-header>
+      <mat-card-content>
+        <table class="items">
+          <thead>
+            <tr><th>Medicine</th><th>Requested</th><th>Fulfilled</th></tr>
+          </thead>
+          <tbody>
+            @for (item of r.items; track item.medicineId) {
+              <tr>
+                <td>{{ item.medicineName }}</td>
+                <td>{{ item.quantityRequested }}</td>
+                <td>{{ item.quantityFulfilled }}</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </mat-card-content>
+    </mat-card>
+
+    @if (isDestination() && (r.status === 'Pending' || r.status === 'Accepted' || r.status === 'PartiallyFulfilled')) {
+      <mat-card class="actions-card">
+        <mat-card-header><mat-card-title>Respond</mat-card-title></mat-card-header>
+        <mat-card-content>
+          @if (r.status === 'Pending') {
+            <div class="btn-row">
+              <button mat-flat-button color="primary" (click)="accept()" [disabled]="busy()">Accept</button>
+              <button mat-stroked-button color="warn" (click)="reject()" [disabled]="busy()">Reject</button>
+            </div>
+          }
+
+          @if (r.status === 'Accepted' || r.status === 'PartiallyFulfilled') {
+            <form [formGroup]="fulfilForm" class="fulfil" formArrayName="items">
+              <p class="hint">Enter quantities to transfer now. Stock moves from your PHC to {{ r.sourcePhcName }}.</p>
+              @for (g of fulfilItems.controls; track $index) {
+                <div class="fulfil__row" [formGroupName]="$index">
+                  <span>{{ g.get('medicineName')?.value }}</span>
+                  <mat-form-field appearance="outline">
+                    <mat-label>Transfer qty</mat-label>
+                    <input matInput type="number" formControlName="quantityFulfilled" />
+                  </mat-form-field>
+                </div>
+              }
+              <div class="btn-row">
+                <button mat-flat-button color="primary" (click)="fulfill()" [disabled]="busy()">
+                  Transfer stock
+                </button>
+                <button mat-stroked-button (click)="complete()" [disabled]="busy()">
+                  Mark complete
+                </button>
+              </div>
+            </form>
+          }
+        </mat-card-content>
+      </mat-card>
+    }
+  </div>
+}

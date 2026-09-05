@@ -1,0 +1,76 @@
+.req-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+mat-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.line {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  flex-wrap: wrap;
+  margin-bottom: 4px;
+
+  &__grow {
+    flex: 3 1 220px;
+  }
+  &__qty {
+    flex: 1;
+    max-width: 110px;
+  }
+}
+
+.full {
+  width: 100%;
+}
+
+.recs {
+  margin-top: 12px;
+  padding: 12px;
+  border-radius: 10px;
+  background: color-mix(in srgb, var(--hg-primary) 8%, transparent);
+
+  &__title {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    margin-bottom: 8px;
+  }
+}
+
+.rec {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  width: 100%;
+  gap: 2px;
+  padding: 8px 12px;
+  margin-bottom: 6px;
+  border: 1px solid var(--hg-border);
+  border-radius: 8px;
+  background: var(--hg-surface);
+  cursor: pointer;
+  text-align: left;
+
+  span {
+    font-size: 0.78rem;
+    color: var(--hg-text-muted);
+  }
+
+  &:hover {
+    border-color: var(--hg-primary);
+  }
+}
+
+.req-form__actions {
+  display: flex;
+  justify-content: flex-end;
+}

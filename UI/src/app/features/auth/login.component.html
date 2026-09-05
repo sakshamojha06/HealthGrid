@@ -1,0 +1,64 @@
+<div class="login">
+  <mat-card class="login__card">
+    @if (loading()) {
+      <mat-progress-bar mode="indeterminate" />
+    }
+    <mat-card-content>
+      <div class="login__brand">
+        <mat-icon>health_metrics</mat-icon>
+        <span>HealthGrid</span>
+      </div>
+      <p class="login__tag">PHC operations &amp; district health intelligence</p>
+
+      <form [formGroup]="form" (ngSubmit)="submit()">
+        <mat-form-field appearance="outline" class="login__field">
+          <mat-label>Email</mat-label>
+          <input matInput type="email" formControlName="email" autocomplete="username" />
+          @if (form.controls.email.hasError('email') && form.controls.email.touched) {
+            <mat-error>Enter a valid email</mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="login__field">
+          <mat-label>Password</mat-label>
+          <input
+            matInput
+            [type]="hidePassword() ? 'password' : 'text'"
+            formControlName="password"
+            autocomplete="current-password"
+          />
+          <button
+            type="button"
+            mat-icon-button
+            matSuffix
+            (click)="hidePassword.set(!hidePassword())"
+            tabindex="-1"
+          >
+            <mat-icon>{{ hidePassword() ? 'visibility' : 'visibility_off' }}</mat-icon>
+          </button>
+        </mat-form-field>
+
+        <button
+          mat-flat-button
+          color="primary"
+          class="login__submit"
+          type="submit"
+          [disabled]="form.invalid || loading()"
+        >
+          Sign in
+        </button>
+      </form>
+
+      <div class="login__demo">
+        <span>Demo accounts (password <code>HealthGrid!12345</code>):</span>
+        <div class="login__demo-buttons">
+          @for (acc of demoAccounts; track acc.email) {
+            <button mat-stroked-button type="button" (click)="fill(acc.email)">
+              {{ acc.label }}
+            </button>
+          }
+        </div>
+      </div>
+    </mat-card-content>
+  </mat-card>
+</div>

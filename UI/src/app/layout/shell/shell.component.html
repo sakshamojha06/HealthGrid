@@ -1,0 +1,65 @@
+<mat-sidenav-container class="shell">
+  <mat-sidenav
+    class="shell__nav"
+    [opened]="opened()"
+    mode="side"
+    [disableClose]="true"
+  >
+    <div class="brand">
+      <mat-icon class="brand__mark">health_metrics</mat-icon>
+      <span class="brand__name">HealthGrid</span>
+    </div>
+
+    <mat-nav-list>
+      @for (item of nav(); track item.route) {
+        <a
+          mat-list-item
+          [routerLink]="item.route"
+          routerLinkActive="active"
+          [routerLinkActiveOptions]="{ exact: item.route === '/dashboard' }"
+        >
+          <mat-icon matListItemIcon>{{ item.icon }}</mat-icon>
+          <span matListItemTitle>{{ item.label }}</span>
+        </a>
+      }
+    </mat-nav-list>
+
+    <div class="shell__scope">
+      @if (user(); as u) {
+        <div class="shell__scope-line">{{ u.districtName ?? 'All districts' }}</div>
+        <div class="shell__scope-sub">{{ u.phcName ?? 'District-wide' }}</div>
+      }
+    </div>
+  </mat-sidenav>
+
+  <mat-sidenav-content class="shell__content">
+    <mat-toolbar class="shell__toolbar">
+      <button mat-icon-button (click)="toggle()" aria-label="Toggle navigation">
+        <mat-icon>menu</mat-icon>
+      </button>
+      <span class="shell__spacer"></span>
+
+      <hg-notification-bell />
+
+      <button mat-button [matMenuTriggerFor]="userMenu" class="shell__user">
+        <mat-icon>account_circle</mat-icon>
+        <span class="shell__user-name">{{ user()?.fullName ?? user()?.email }}</span>
+      </button>
+      <mat-menu #userMenu="matMenu">
+        <div class="shell__user-card">
+          <strong>{{ user()?.fullName }}</strong>
+          <small>{{ user()?.email }}</small>
+          <small class="shell__role">{{ user()?.role }}</small>
+        </div>
+        <button mat-menu-item (click)="logout()">
+          <mat-icon>logout</mat-icon>
+          <span>Sign out</span>
+        </button>
+      </mat-menu>
+    </mat-toolbar>
+
+    <main class="shell__main">
+      <router-outlet />
+    </main>
+  </mat-sidenav-content>
+</mat-sidenav-container>

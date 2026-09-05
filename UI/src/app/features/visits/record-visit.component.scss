@@ -1,0 +1,48 @@
+.visit-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+mat-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.row {
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+
+  mat-form-field {
+    flex: 1 1 200px;
+  }
+}
+
+.row__grow {
+  flex: 2 1 260px;
+}
+
+.full {
+  width: 100%;
+}
+
+.rx-row {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+
+  &__grow {
+    flex: 3;
+  }
+  &__qty {
+    flex: 1;
+    max-width: 120px;
+  }
+}
+
+.visit-form__actions {
+  display: flex;
+  justify-content: flex-end;
+}

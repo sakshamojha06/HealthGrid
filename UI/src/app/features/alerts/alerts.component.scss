@@ -1,0 +1,41 @@
+.tab-body {
+  padding: 14px 6px;
+}
+
+.tab-actions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  border: 1px solid var(--hg-border);
+  border-left: 3px solid var(--hg-text-muted);
+  border-radius: 8px;
+  margin-bottom: 8px;
+
+  &[data-sev='Warning'] {
+    border-left-color: #f5a623;
+  }
+  &[data-sev='Critical'] {
+    border-left-color: var(--hg-danger);
+  }
+  &--ack {
+    opacity: 0.55;
+  }
+
+  &__body {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    flex: 1;
+
+    small {
+      color: var(--hg-text-muted);
+      font-size: 0.75rem;
+    }
+  }
+}

@@ -1,0 +1,94 @@
+@use '@angular/material' as mat;
+
+html {
+  color-scheme: light dark;
+
+  @include mat.theme(
+    (
+      color: (
+        primary: mat.$azure-palette,
+        tertiary: mat.$cyan-palette,
+      ),
+      typography: Roboto,
+      density: 0,
+    )
+  );
+}
+
+/* ---------------------------------------------------------------------------
+   Design tokens — consumed by every feature component's SCSS.
+   Light values on :root; dark overrides under the media query.
+--------------------------------------------------------------------------- */
+:root {
+  --hg-bg: #f4f6f9;
+  --hg-surface: #ffffff;
+  --hg-border: #e2e6ec;
+  --hg-text: #1b1f24;
+  --hg-text-muted: #667085;
+  --hg-primary: #2563c9;
+  --hg-danger: #d13c3c;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --hg-bg: #14171c;
+    --hg-surface: #1c2027;
+    --hg-border: #2c313a;
+    --hg-text: #e7eaee;
+    --hg-text-muted: #9aa4b2;
+    --hg-primary: #5b9bff;
+    --hg-danger: #ff6b6b;
+  }
+}
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--hg-bg);
+  color: var(--hg-text);
+  font-family: Roboto, 'Helvetica Neue', sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+.material-symbols-outlined {
+  font-family: 'Material Symbols Outlined';
+  font-weight: normal;
+  font-style: normal;
+  line-height: 1;
+  letter-spacing: normal;
+  text-transform: none;
+  display: inline-block;
+  white-space: nowrap;
+  word-wrap: normal;
+  direction: ltr;
+  font-variation-settings:
+    'FILL' 0,
+    'wght' 400,
+    'GRAD' 0,
+    'opsz' 24;
+}
+
+.hg-snack-error {
+  --mdc-snackbar-container-color: var(--hg-danger);
+  --mdc-snackbar-supporting-text-color: #fff;
+}
+
+mat-card {
+  --mat-card-elevated-container-color: var(--hg-surface);
+  border: 1px solid var(--hg-border);
+}
+
+.mat-mdc-card-header {
+  padding: 12px 16px 0;
+}
+
+a {
+  color: var(--hg-primary);
+}

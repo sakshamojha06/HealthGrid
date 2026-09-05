@@ -1,0 +1,64 @@
+<h2 mat-dialog-title>{{ data.doctor ? 'Edit' : 'Add' }} doctor</h2>
+<mat-dialog-content>
+  <form [formGroup]="form" class="form">
+    <div class="row">
+      <mat-form-field appearance="outline">
+        <mat-label>Name</mat-label>
+        <input matInput formControlName="name" />
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>Registration no.</mat-label>
+        <input matInput formControlName="registrationNumber" />
+      </mat-form-field>
+    </div>
+    <div class="row">
+      <mat-form-field appearance="outline">
+        <mat-label>PHC</mat-label>
+        <mat-select formControlName="phcId">
+          @for (p of data.phcs; track p.id) { <mat-option [value]="p.id">{{ p.name }}</mat-option> }
+        </mat-select>
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>Specialization</mat-label>
+        <mat-select formControlName="specializationId">
+          <mat-option value="">General</mat-option>
+          @for (s of data.specializations; track s.id) {
+            <mat-option [value]="s.id">{{ s.name }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+    </div>
+
+    <div class="avail" formArrayName="availability">
+      <div class="avail__head">
+        <span>OPD availability</span>
+        <button mat-stroked-button type="button" (click)="addSlot()">
+          <mat-icon>add</mat-icon> Add slot
+        </button>
+      </div>
+      @for (slot of slots.controls; track $index) {
+        <div class="avail__row" [formGroupName]="$index">
+          <mat-form-field appearance="outline">
+            <mat-label>Day</mat-label>
+            <mat-select formControlName="dayOfWeek">
+              @for (d of days; track d; let i = $index) { <mat-option [value]="i">{{ d }}</mat-option> }
+            </mat-select>
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>Start</mat-label>
+            <input matInput type="time" formControlName="startTime" />
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>End</mat-label>
+            <input matInput type="time" formControlName="endTime" />
+          </mat-form-field>
+          <button mat-icon-button type="button" (click)="removeSlot($index)"><mat-icon>delete</mat-icon></button>
+        </div>
+      }
+    </div>
+  </form>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <button mat-button mat-dialog-close>Cancel</button>
+  <button mat-flat-button color="primary" (click)="save()" [disabled]="saving()">Save</button>
+</mat-dialog-actions>

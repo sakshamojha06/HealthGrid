@@ -1,0 +1,79 @@
+<hg-page-header title="Inventory" subtitle="District-wide stock — you can see what neighbouring PHCs hold">
+  <a mat-stroked-button routerLink="/inventory/ledger">
+    <mat-icon>receipt_long</mat-icon> Transaction ledger
+  </a>
+</hg-page-header>
+
+<mat-card>
+  <mat-card-content>
+    <div class="filters">
+      <mat-form-field appearance="outline">
+        <mat-label>Search medicine</mat-label>
+        <input matInput [formControl]="search" />
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>PHC</mat-label>
+        <mat-select [formControl]="phcFilter">
+          <mat-option value="">All PHCs in district</mat-option>
+          @for (p of phcs(); track p.id) {
+            <mat-option [value]="p.id">{{ p.name }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+      <mat-slide-toggle [formControl]="lowOnly">Low stock only</mat-slide-toggle>
+    </div>
+
+    <hg-data-state
+      [loading]="loading()"
+      [error]="error()"
+      [empty]="!loading() && filtered().length === 0"
+      emptyText="No stock rows."
+    />
+
+    @if (!loading() && filtered().length) {
+      <table mat-table [dataSource]="filtered()" class="stock-table">
+        <ng-container matColumnDef="medicine">
+          <th mat-header-cell *matHeaderCellDef>Medicine</th>
+          <td mat-cell *matCellDef="let r">{{ r.medicineName }}</td>
+        </ng-container>
+        <ng-container matColumnDef="phc">
+          <th mat-header-cell *matHeaderCellDef>PHC</th>
+          <td mat-cell *matCellDef="let r">{{ r.phcName }}</td>
+        </ng-container>
+        <ng-container matColumnDef="onHand">
+          <th mat-header-cell *matHeaderCellDef>On hand</th>
+          <td mat-cell *matCellDef="let r" [class.low]="r.isLow">
+            {{ r.quantityOnHand }} {{ r.unit }}
+            @if (r.isLow) { <mat-icon inline>warning</mat-icon> }
+          </td>
+        </ng-container>
+        <ng-container matColumnDef="safety">
+          <th mat-header-cell *matHeaderCellDef>Safety stock</th>
+          <td mat-cell *matCellDef="let r">{{ r.safetyStock }}</td>
+        </ng-container>
+        <ng-container matColumnDef="expiry">
+          <th mat-header-cell *matHeaderCellDef>Expiry</th>
+          <td mat-cell *matCellDef="let r">{{ r.expiryDate ? (r.expiryDate | date: 'MMM y') : '—' }}</td>
+        </ng-container>
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef></th>
+          <td mat-cell *matCellDef="let r">
+            @if (canManage(r)) {
+              <button mat-icon-button [matMenuTriggerFor]="menu"><mat-icon>more_vert</mat-icon></button>
+              <mat-menu #menu="matMenu">
+                <button mat-menu-item (click)="mutate(r, 'receipt')">
+                  <mat-icon>add_box</mat-icon> Receive stock
+                </button>
+                <button mat-menu-item (click)="mutate(r, 'adjustment')">
+                  <mat-icon>tune</mat-icon> Adjust
+                </button>
+              </mat-menu>
+            }
+          </td>
+        </ng-container>
+        <tr mat-header-row *matHeaderRowDef="columns"></tr>
+        <tr mat-row *matRowDef="let row; columns: columns" [class.low-row]="row.isLow"></tr>
+      </table>
+    }
+  </mat-card-content>
+</mat-card>

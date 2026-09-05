@@ -1,0 +1,44 @@
+<h2 mat-dialog-title>{{ data.user ? 'Edit user' : 'New user' }}</h2>
+<mat-dialog-content>
+  <form [formGroup]="form" class="form">
+    <mat-form-field appearance="outline">
+      <mat-label>Full name</mat-label>
+      <input matInput formControlName="fullName" />
+    </mat-form-field>
+    <mat-form-field appearance="outline">
+      <mat-label>Email</mat-label>
+      <input matInput type="email" formControlName="email" [readonly]="!!data.user" />
+    </mat-form-field>
+    @if (!data.user) {
+      <mat-form-field appearance="outline">
+        <mat-label>Temporary password</mat-label>
+        <input matInput formControlName="password" />
+        <mat-hint>At least 12 characters</mat-hint>
+      </mat-form-field>
+    }
+    <mat-form-field appearance="outline">
+      <mat-label>Role</mat-label>
+      <mat-select formControlName="role">
+        @for (r of roles; track r) { <mat-option [value]="r">{{ r }}</mat-option> }
+      </mat-select>
+    </mat-form-field>
+    <mat-form-field appearance="outline">
+      <mat-label>District</mat-label>
+      <mat-select formControlName="districtId" (valueChange)="onDistrictChange($event)">
+        <mat-option value="">None (system-wide)</mat-option>
+        @for (d of data.districts; track d.id) { <mat-option [value]="d.id">{{ d.name }}</mat-option> }
+      </mat-select>
+    </mat-form-field>
+    <mat-form-field appearance="outline">
+      <mat-label>PHC</mat-label>
+      <mat-select formControlName="phcId">
+        <mat-option value="">District-wide</mat-option>
+        @for (p of phcsInDistrict(); track p.id) { <mat-option [value]="p.id">{{ p.name }}</mat-option> }
+      </mat-select>
+    </mat-form-field>
+  </form>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <button mat-button mat-dialog-close>Cancel</button>
+  <button mat-flat-button color="primary" (click)="save()" [disabled]="saving()">Save</button>
+</mat-dialog-actions>

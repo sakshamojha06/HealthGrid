@@ -1,0 +1,27 @@
+.filters {
+  display: flex;
+  gap: 14px;
+  align-items: center;
+  flex-wrap: wrap;
+  margin-bottom: 8px;
+
+  mat-form-field {
+    flex: 1 1 200px;
+  }
+}
+
+.stock-table {
+  width: 100%;
+}
+
+.low {
+  color: var(--hg-danger);
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.low-row {
+  background: color-mix(in srgb, var(--hg-danger) 6%, transparent);
+}

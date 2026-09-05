@@ -1,0 +1,29 @@
+.filters {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 8px;
+
+  mat-form-field {
+    flex: 1 1 160px;
+  }
+}
+
+.visits-table {
+  width: 100%;
+}
+
+.muted {
+  display: block;
+  color: var(--hg-text-muted);
+  font-size: 0.75rem;
+}
+
+.rx {
+  display: inline-block;
+  margin: 2px 4px 2px 0;
+  padding: 1px 8px;
+  border-radius: 6px;
+  background: var(--hg-bg);
+  font-size: 0.78rem;
+}

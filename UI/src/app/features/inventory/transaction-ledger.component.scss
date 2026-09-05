@@ -1,0 +1,22 @@
+.filters {
+  margin-bottom: 8px;
+}
+
+.ledger-table {
+  width: 100%;
+}
+
+.tag {
+  padding: 2px 8px;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  background: var(--hg-bg);
+}
+.tag[data-type='PatientIssue'],
+.tag[data-type='TransferOut'] {
+  background: color-mix(in srgb, var(--hg-danger) 14%, transparent);
+}
+.tag[data-type='Receipt'],
+.tag[data-type='TransferIn'] {
+  background: color-mix(in srgb, #39a27a 18%, transparent);
+}

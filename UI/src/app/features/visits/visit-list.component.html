@@ -1,0 +1,81 @@
+<hg-page-header title="Patient visits" subtitle="Visits recorded at your PHC">
+  <a mat-flat-button color="primary" routerLink="/visits/record">
+    <mat-icon>assignment_add</mat-icon> Record visit
+  </a>
+</hg-page-header>
+
+<mat-card>
+  <mat-card-content>
+    <form [formGroup]="filters" class="filters">
+      <mat-form-field appearance="outline">
+        <mat-label>Search patient</mat-label>
+        <input matInput formControlName="search" />
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>Disease</mat-label>
+        <mat-select formControlName="diseaseId">
+          <mat-option value="">All</mat-option>
+          @for (d of diseases(); track d.id) {
+            <mat-option [value]="d.id">{{ d.name }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>From</mat-label>
+        <input matInput type="date" formControlName="from" />
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>To</mat-label>
+        <input matInput type="date" formControlName="to" />
+      </mat-form-field>
+    </form>
+
+    <hg-data-state [loading]="loading()" [error]="error()" [empty]="!loading() && rows().length === 0" emptyText="No visits match these filters." />
+
+    @if (!loading() && rows().length) {
+      <table mat-table [dataSource]="rows()" class="visits-table">
+        <ng-container matColumnDef="visitDate">
+          <th mat-header-cell *matHeaderCellDef>Date</th>
+          <td mat-cell *matCellDef="let v">{{ v.visitDate | date: 'mediumDate' }}</td>
+        </ng-container>
+        <ng-container matColumnDef="patient">
+          <th mat-header-cell *matHeaderCellDef>Patient</th>
+          <td mat-cell *matCellDef="let v">
+            {{ v.localIdentifier }}
+            <small class="muted">{{ v.gender }} {{ v.birthYear ? '· b.' + v.birthYear : '' }}</small>
+          </td>
+        </ng-container>
+        <ng-container matColumnDef="diseases">
+          <th mat-header-cell *matHeaderCellDef>Diagnosis</th>
+          <td mat-cell *matCellDef="let v">
+            <mat-chip-set>
+              @for (d of v.diseases; track d) { <mat-chip>{{ d }}</mat-chip> }
+            </mat-chip-set>
+          </td>
+        </ng-container>
+        <ng-container matColumnDef="medicines">
+          <th mat-header-cell *matHeaderCellDef>Prescribed</th>
+          <td mat-cell *matCellDef="let v">
+            @for (m of v.medicines; track m.name) {
+              <span class="rx">{{ m.name }} ×{{ m.quantity }}</span>
+            }
+          </td>
+        </ng-container>
+        <ng-container matColumnDef="doctor">
+          <th mat-header-cell *matHeaderCellDef>Doctor</th>
+          <td mat-cell *matCellDef="let v">{{ v.attendingDoctorName ?? '—' }}</td>
+        </ng-container>
+        <tr mat-header-row *matHeaderRowDef="columns"></tr>
+        <tr mat-row *matRowDef="let row; columns: columns"></tr>
+      </table>
+
+      <mat-paginator
+        [length]="total()"
+        [pageSize]="pageSize"
+        [pageIndex]="page"
+        [pageSizeOptions]="[10, 20, 50]"
+        (page)="onPage($event)"
+      />
+    }
+  </mat-card-content>
+</mat-card>

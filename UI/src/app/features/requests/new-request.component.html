@@ -1,0 +1,80 @@
+<hg-page-header title="New medicine request" subtitle="Ask another PHC in your district to transfer stock" />
+
+<form [formGroup]="form" (ngSubmit)="submit()" class="req-form">
+  <mat-card formArrayName="items">
+    <mat-card-header>
+      <mat-card-title>What do you need?</mat-card-title>
+      <button mat-stroked-button type="button" (click)="addItem()">
+        <mat-icon>add</mat-icon> Add item
+      </button>
+    </mat-card-header>
+    <mat-card-content>
+      @for (item of items.controls; track $index) {
+        <div class="line" [formGroupName]="$index">
+          <mat-form-field appearance="outline" class="line__grow">
+            <mat-label>Medicine</mat-label>
+            <mat-select formControlName="medicineId">
+              @for (m of medicines(); track m.id) {
+                <mat-option [value]="m.id">{{ m.name }} ({{ m.unit }})</mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+          <mat-form-field appearance="outline" class="line__qty">
+            <mat-label>Qty</mat-label>
+            <input matInput type="number" formControlName="quantityRequested" />
+          </mat-form-field>
+          <button mat-stroked-button type="button" (click)="suggestSources($index)">
+            <mat-icon>auto_awesome</mat-icon> Suggest source
+          </button>
+          <button mat-icon-button type="button" (click)="removeItem($index)" [disabled]="items.length === 1">
+            <mat-icon>delete</mat-icon>
+          </button>
+        </div>
+      }
+
+      @if (recommendations().length) {
+        <div class="recs">
+          <div class="recs__title">
+            <mat-icon>auto_awesome</mat-icon> AI-suggested sources (surplus after predicted demand)
+          </div>
+          @for (r of recommendations(); track r.phcId) {
+            <button type="button" class="rec" (click)="useSource(r.phcId)">
+              <strong>{{ r.phcName }}</strong>
+              <span>surplus ~{{ r.availableSurplus | number: '1.0-0' }} · 7-day demand ~{{ r.predictedDemand7d | number: '1.0-0' }}</span>
+            </button>
+          }
+        </div>
+      }
+    </mat-card-content>
+  </mat-card>
+
+  <mat-card>
+    <mat-card-header><mat-card-title>Send to</mat-card-title></mat-card-header>
+    <mat-card-content class="line">
+      <mat-form-field appearance="outline" class="line__grow">
+        <mat-label>Destination PHC</mat-label>
+        <mat-select formControlName="destinationPhcId">
+          @for (p of phcs(); track p.id) {
+            <mat-option [value]="p.id">{{ p.name }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>Needed by</mat-label>
+        <input matInput type="date" formControlName="neededByDate" />
+      </mat-form-field>
+    </mat-card-content>
+    <mat-card-content>
+      <mat-form-field appearance="outline" class="full">
+        <mat-label>Notes</mat-label>
+        <textarea matInput rows="2" formControlName="notes"></textarea>
+      </mat-form-field>
+    </mat-card-content>
+  </mat-card>
+
+  <div class="req-form__actions">
+    <button mat-flat-button color="primary" type="submit" [disabled]="saving()">
+      {{ saving() ? 'Sending…' : 'Send request' }}
+    </button>
+  </div>
+</form>

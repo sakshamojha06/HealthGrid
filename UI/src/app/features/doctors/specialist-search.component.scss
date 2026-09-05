@@ -1,0 +1,70 @@
+.filter-card {
+  margin-bottom: 16px;
+}
+
+.filters {
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+
+  mat-form-field {
+    flex: 1 1 200px;
+  }
+}
+
+.cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 14px;
+}
+
+.doc__head {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+
+  div {
+    display: flex;
+    flex-direction: column;
+  }
+  span {
+    color: var(--hg-text-muted);
+    font-size: 0.82rem;
+  }
+  mat-icon {
+    color: var(--hg-primary);
+  }
+}
+
+.doc__phc {
+  margin-top: 10px;
+  font-size: 0.88rem;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.doc__reg {
+  color: var(--hg-text-muted);
+  font-size: 0.78rem;
+  margin-top: 2px;
+}
+
+.doc__slots {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 12px;
+}
+
+.slot {
+  padding: 2px 8px;
+  border-radius: 6px;
+  background: color-mix(in srgb, var(--hg-primary) 10%, transparent);
+  font-size: 0.75rem;
+
+  &--none {
+    background: var(--hg-bg);
+    color: var(--hg-text-muted);
+  }
+}

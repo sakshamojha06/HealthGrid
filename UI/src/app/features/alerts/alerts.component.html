@@ -1,0 +1,63 @@
+<hg-page-header title="Alerts &amp; notifications" subtitle="AI predictions and operational notifications for your district" />
+
+<mat-card>
+  <mat-tab-group>
+    <mat-tab label="AI alerts">
+      <div class="tab-body">
+        <hg-data-state
+          [loading]="loadingAi()"
+          [empty]="!loadingAi() && aiAlerts().length === 0"
+          emptyText="No AI alerts. Run the prediction pipeline from the dashboard."
+        />
+        @for (a of aiAlerts(); track a.id) {
+          <div class="row" [attr.data-sev]="a.severity" [class.row--ack]="a.isAcknowledged">
+            <mat-icon>{{ icon(a.alertType) }}</mat-icon>
+            <div class="row__body">
+              <span>{{ a.message }}</span>
+              <small>{{ a.alertType }} · {{ a.createdAtUtc | date: 'medium' }}</small>
+            </div>
+            @if (!a.isAcknowledged) {
+              <button mat-stroked-button (click)="ackAi(a.id)">Acknowledge</button>
+            }
+          </div>
+        }
+      </div>
+    </mat-tab>
+
+    <mat-tab>
+      <ng-template mat-tab-label>
+        <span
+          [matBadge]="notifications.unreadCount()"
+          [matBadgeHidden]="notifications.unreadCount() === 0"
+          matBadgeColor="warn"
+          matBadgeOverlap="false"
+        >
+          Notifications
+        </span>
+      </ng-template>
+      <div class="tab-body">
+        <div class="tab-actions">
+          <button mat-button (click)="notifications.acknowledgeAll()" [disabled]="notifications.unreadCount() === 0">
+            Mark all read
+          </button>
+        </div>
+        <hg-data-state [empty]="notifications.items().length === 0" emptyText="No notifications." />
+        @for (n of notifications.items(); track n.id) {
+          <div class="row" [attr.data-sev]="n.severity" [class.row--ack]="n.isAcknowledged">
+            <mat-icon>notifications</mat-icon>
+            <div class="row__body">
+              <strong>{{ n.title }}</strong>
+              <span>{{ n.message }}</span>
+              <small>{{ n.createdAtUtc | date: 'medium' }}</small>
+            </div>
+            @if (!n.isAcknowledged) {
+              <button mat-icon-button (click)="notifications.acknowledge(n.id).subscribe()">
+                <mat-icon>check</mat-icon>
+              </button>
+            }
+          </div>
+        }
+      </div>
+    </mat-tab>
+  </mat-tab-group>
+</mat-card>

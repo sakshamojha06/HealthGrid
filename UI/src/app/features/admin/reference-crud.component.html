@@ -1,0 +1,70 @@
+<hg-page-header [title]="config.title" [subtitle]="config.subtitle">
+  <button mat-flat-button color="primary" (click)="startCreate()" [disabled]="editingId() === 'new'">
+    <mat-icon>add</mat-icon> Add
+  </button>
+</hg-page-header>
+
+<mat-card>
+  <mat-card-content>
+    <hg-data-state [loading]="loading()" />
+
+    @if (!loading()) {
+      @if (editingId() === 'new') {
+        <form [formGroup]="form" class="editor" (ngSubmit)="save()">
+          @for (f of config.fields; track f.key) {
+            @if (f.type === 'toggle') {
+              <mat-slide-toggle [formControlName]="f.key">{{ f.label }}</mat-slide-toggle>
+            } @else {
+              <mat-form-field appearance="outline">
+                <mat-label>{{ f.label }}</mat-label>
+                <input matInput [formControlName]="f.key" />
+              </mat-form-field>
+            }
+          }
+          <div class="editor__actions">
+            <button mat-button type="button" (click)="cancel()">Cancel</button>
+            <button mat-flat-button color="primary" type="submit" [disabled]="saving()">Save</button>
+          </div>
+        </form>
+      }
+
+      <table mat-table [dataSource]="rows()" class="tbl">
+        @for (f of config.fields; track f.key) {
+          <ng-container [matColumnDef]="f.key">
+            <th mat-header-cell *matHeaderCellDef>{{ f.label }}</th>
+            <td mat-cell *matCellDef="let row">
+              @if (editingId() === row.id) {
+                @if (f.type === 'toggle') {
+                  <mat-slide-toggle [formControl]="$any(form.get(f.key))"></mat-slide-toggle>
+                } @else {
+                  <mat-form-field appearance="outline" class="inline-field">
+                    <input matInput [formControl]="$any(form.get(f.key))" />
+                  </mat-form-field>
+                }
+              } @else {
+                @if (f.type === 'toggle') {
+                  {{ display(row, f.key) ? 'Yes' : 'No' }}
+                } @else {
+                  {{ display(row, f.key) }}
+                }
+              }
+            </td>
+          </ng-container>
+        }
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef></th>
+          <td mat-cell *matCellDef="let row">
+            @if (editingId() === row.id) {
+              <button mat-icon-button (click)="save()"><mat-icon>check</mat-icon></button>
+              <button mat-icon-button (click)="cancel()"><mat-icon>close</mat-icon></button>
+            } @else {
+              <button mat-icon-button (click)="startEdit(row)"><mat-icon>edit</mat-icon></button>
+            }
+          </td>
+        </ng-container>
+        <tr mat-header-row *matHeaderRowDef="columns"></tr>
+        <tr mat-row *matRowDef="let row; columns: columns"></tr>
+      </table>
+    }
+  </mat-card-content>
+</mat-card>

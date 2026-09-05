@@ -1,0 +1,70 @@
+<hg-page-header title="Medicine requests" subtitle="Exchange stock with other PHCs in your district">
+  <a mat-flat-button color="primary" routerLink="/requests/new">
+    <mat-icon>add</mat-icon> New request
+  </a>
+</hg-page-header>
+
+<mat-card>
+  <mat-tab-group>
+    <mat-tab>
+      <ng-template mat-tab-label>
+        <span
+          [matBadge]="pendingIncoming()"
+          [matBadgeHidden]="pendingIncoming() === 0"
+          matBadgeColor="warn"
+          matBadgeOverlap="false"
+        >
+          Incoming
+        </span>
+      </ng-template>
+
+      <div class="tab-body">
+        <hg-data-state
+          [loading]="loading()"
+          [empty]="!loading() && incoming().length === 0"
+          emptyText="No incoming requests."
+        />
+        @for (r of incoming(); track r.id) {
+          <a class="req" [routerLink]="['/requests', r.id]">
+            <div class="req__main">
+              <span class="req__parties">from <strong>{{ r.sourcePhcName }}</strong></span>
+              <span class="req__items">
+                {{ r.items.length }} item(s) · {{ r.items[0]?.medicineName
+                }}{{ r.items.length > 1 ? ' +' + (r.items.length - 1) : '' }}
+              </span>
+            </div>
+            <div class="req__meta">
+              <span class="status" [attr.data-status]="r.status">{{ r.status }}</span>
+              <small>{{ r.createdAtUtc | date: 'short' }}</small>
+            </div>
+          </a>
+        }
+      </div>
+    </mat-tab>
+
+    <mat-tab label="Outgoing">
+      <div class="tab-body">
+        <hg-data-state
+          [loading]="loading()"
+          [empty]="!loading() && outgoing().length === 0"
+          emptyText="No outgoing requests."
+        />
+        @for (r of outgoing(); track r.id) {
+          <a class="req" [routerLink]="['/requests', r.id]">
+            <div class="req__main">
+              <span class="req__parties">to <strong>{{ r.destinationPhcName }}</strong></span>
+              <span class="req__items">
+                {{ r.items.length }} item(s) · {{ r.items[0]?.medicineName
+                }}{{ r.items.length > 1 ? ' +' + (r.items.length - 1) : '' }}
+              </span>
+            </div>
+            <div class="req__meta">
+              <span class="status" [attr.data-status]="r.status">{{ r.status }}</span>
+              <small>{{ r.createdAtUtc | date: 'short' }}</small>
+            </div>
+          </a>
+        }
+      </div>
+    </mat-tab>
+  </mat-tab-group>
+</mat-card>

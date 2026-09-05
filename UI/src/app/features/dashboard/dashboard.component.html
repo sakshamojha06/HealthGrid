@@ -1,0 +1,174 @@
+<hg-page-header
+  title="Dashboard"
+  [subtitle]="
+    data()
+      ? 'Data as of ' + (data()!.generatedAtUtc | date: 'short')
+      : 'Operational overview for your district'
+  "
+>
+  @if (canRunAi()) {
+    <button mat-stroked-button (click)="runAi()" [disabled]="running()">
+      <mat-icon>bolt</mat-icon>
+      {{ running() ? 'Running…' : 'Run AI now' }}
+    </button>
+  }
+  <button mat-icon-button (click)="reload()" aria-label="Refresh"><mat-icon>refresh</mat-icon></button>
+</hg-page-header>
+
+<hg-data-state
+  [loading]="loading()"
+  [error]="error()"
+/>
+
+@if (!loading() && data(); as d) {
+  <!-- Prediction status banner -->
+  @if (d.predictionStatus !== 'Ready') {
+    <div class="pred-banner" [attr.data-status]="d.predictionStatus">
+      <mat-icon>{{ d.predictionStatus === 'Stale' ? 'history' : 'hourglass_empty' }}</mat-icon>
+      <span>
+        @if (d.predictionStatus === 'Stale') {
+          AI predictions are stale — the model service may be unavailable. Showing the last run.
+        } @else {
+          Not enough history yet for reliable predictions. Keep recording visits.
+        }
+      </span>
+    </div>
+  }
+
+  <!-- KPI row -->
+  <section class="kpis">
+    <hg-stat-card icon="groups" [value]="d.todayPatientCount" label="Patients today" [accent]="true" />
+    <hg-stat-card
+      icon="trending_up"
+      [value]="d.patientVolumePctChange !== null ? (d.patientVolumePctChange | number: '1.0-0') + '%' : '—'"
+      label="Volume vs 4-wk baseline"
+      [hint]="d.predictionModelVersion ? 'model ' + d.predictionModelVersion : null"
+    />
+    <hg-stat-card
+      icon="inventory_2"
+      [value]="d.inventorySummary.low + ' / ' + d.inventorySummary.total"
+      label="Medicines low on stock"
+    />
+    <hg-stat-card
+      icon="sync_alt"
+      [value]="d.pendingIncomingRequests"
+      label="Incoming requests"
+      [hint]="d.pendingOutgoingRequests + ' outgoing'"
+    />
+  </section>
+
+  <div class="grid">
+    <!-- Patient volume + forecast -->
+    <mat-card class="grid__wide">
+      <mat-card-header>
+        <mat-card-title>Patient volume &amp; 14-day forecast</mat-card-title>
+      </mat-card-header>
+      <mat-card-content class="chart-wrap">
+        @if ((d.patientVolumeTrend || []).length) {
+          <hg-chart [type]="'line'" [data]="volumeChart()" />
+        } @else {
+          <hg-data-state [empty]="true" emptyText="No visit history yet." />
+        }
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Disease trends -->
+    <mat-card>
+      <mat-card-header><mat-card-title>Top diseases today</mat-card-title></mat-card-header>
+      <mat-card-content class="chart-wrap">
+        @if ((d.diseaseTrends || []).length) {
+          <hg-chart [type]="'bar'" [data]="diseaseChart()" />
+        } @else {
+          <hg-data-state [empty]="true" emptyText="No diagnoses recorded today." />
+        }
+      </mat-card-content>
+    </mat-card>
+
+    <!-- AI alerts -->
+    <mat-card>
+      <mat-card-header>
+        <mat-card-title>AI alerts</mat-card-title>
+        <a mat-button routerLink="/alerts">View all</a>
+      </mat-card-header>
+      <mat-card-content>
+        @if ((d.aiAlerts || []).length) {
+          @for (a of d.aiAlerts; track a.id) {
+            <div class="alert" [attr.data-sev]="a.severity" [class.alert--ack]="a.isAcknowledged">
+              <mat-icon>{{
+                a.alertType === 'Stockout'
+                  ? 'medication'
+                  : a.alertType === 'DiseaseAnomaly'
+                    ? 'coronavirus'
+                    : 'trending_up'
+              }}</mat-icon>
+              <span class="alert__msg">{{ a.message }}</span>
+              @if (!a.isAcknowledged) {
+                <button mat-icon-button (click)="acknowledge(a.id)" aria-label="Acknowledge">
+                  <mat-icon>check</mat-icon>
+                </button>
+              }
+            </div>
+          }
+        } @else {
+          <hg-data-state [empty]="true" emptyText="No active alerts." />
+        }
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Stock-out risk -->
+    <mat-card class="grid__wide">
+      <mat-card-header><mat-card-title>Predicted stock-out risk</mat-card-title></mat-card-header>
+      <mat-card-content>
+        @if ((d.stockoutRisks || []).length) {
+          <table mat-table [dataSource]="d.stockoutRisks" class="risk-table">
+            <ng-container matColumnDef="medicine">
+              <th mat-header-cell *matHeaderCellDef>Medicine</th>
+              <td mat-cell *matCellDef="let r">{{ r.medicineName }}</td>
+            </ng-container>
+            <ng-container matColumnDef="phc">
+              <th mat-header-cell *matHeaderCellDef>PHC</th>
+              <td mat-cell *matCellDef="let r">{{ r.phcName }}</td>
+            </ng-container>
+            <ng-container matColumnDef="days">
+              <th mat-header-cell *matHeaderCellDef>Days left</th>
+              <td mat-cell *matCellDef="let r">{{ r.daysToStockout ?? '—' }}</td>
+            </ng-container>
+            <ng-container matColumnDef="reorder">
+              <th mat-header-cell *matHeaderCellDef>Suggested reorder</th>
+              <td mat-cell *matCellDef="let r">{{ r.recommendedReorderQty | number: '1.0-0' }}</td>
+            </ng-container>
+            <ng-container matColumnDef="risk">
+              <th mat-header-cell *matHeaderCellDef>Risk</th>
+              <td mat-cell *matCellDef="let r">
+                <span class="pill" [attr.data-sev]="r.risk">{{ r.risk }}</span>
+              </td>
+            </ng-container>
+            <tr mat-header-row *matHeaderRowDef="stockoutColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: stockoutColumns"></tr>
+          </table>
+        } @else {
+          <hg-data-state [empty]="true" emptyText="No stock-out risks predicted." />
+        }
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Specialists -->
+    <mat-card>
+      <mat-card-header>
+        <mat-card-title>Specialists on duty</mat-card-title>
+        <a mat-button routerLink="/doctors/search">Directory</a>
+      </mat-card-header>
+      <mat-card-content>
+        @if ((d.availableSpecialists || []).length) {
+          <mat-chip-set>
+            @for (s of d.availableSpecialists; track s.specialization) {
+              <mat-chip>{{ s.specialization }} · {{ s.count }}</mat-chip>
+            }
+          </mat-chip-set>
+        } @else {
+          <hg-data-state [empty]="true" emptyText="No availability configured." />
+        }
+      </mat-card-content>
+    </mat-card>
+  </div>
+}

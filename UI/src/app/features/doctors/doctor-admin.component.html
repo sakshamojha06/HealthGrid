@@ -1,0 +1,40 @@
+<hg-page-header title="Doctors" subtitle="Manage doctors and OPD availability for your district">
+  <button mat-flat-button color="primary" (click)="open(null)">
+    <mat-icon>add</mat-icon> Add doctor
+  </button>
+</hg-page-header>
+
+<mat-card>
+  <mat-card-content>
+    <hg-data-state [loading]="loading()" [empty]="!loading() && doctors().length === 0" emptyText="No doctors yet." />
+    @if (!loading() && doctors().length) {
+      <table mat-table [dataSource]="doctors()" class="tbl">
+        <ng-container matColumnDef="name">
+          <th mat-header-cell *matHeaderCellDef>Name</th>
+          <td mat-cell *matCellDef="let d">{{ d.name }}</td>
+        </ng-container>
+        <ng-container matColumnDef="specialization">
+          <th mat-header-cell *matHeaderCellDef>Specialization</th>
+          <td mat-cell *matCellDef="let d">{{ d.specializationName ?? 'General' }}</td>
+        </ng-container>
+        <ng-container matColumnDef="phc">
+          <th mat-header-cell *matHeaderCellDef>PHC</th>
+          <td mat-cell *matCellDef="let d">{{ d.phcName }}</td>
+        </ng-container>
+        <ng-container matColumnDef="slots">
+          <th mat-header-cell *matHeaderCellDef>OPD slots</th>
+          <td mat-cell *matCellDef="let d">{{ d.availability.length }}</td>
+        </ng-container>
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef></th>
+          <td mat-cell *matCellDef="let d">
+            <button mat-icon-button (click)="open(d)"><mat-icon>edit</mat-icon></button>
+            <button mat-icon-button (click)="remove(d)"><mat-icon>delete</mat-icon></button>
+          </td>
+        </ng-container>
+        <tr mat-header-row *matHeaderRowDef="columns"></tr>
+        <tr mat-row *matRowDef="let row; columns: columns"></tr>
+      </table>
+    }
+  </mat-card-content>
+</mat-card>
