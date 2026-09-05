@@ -1,0 +1,6 @@
+# Floors chosen so pre-built wheels are available on Python 3.11–3.14.
+fastapi>=0.118,<1.0
+uvicorn[standard]>=0.34,<1.0
+pydantic>=2.12,<3.0
+pydantic-settings>=2.7,<3.0
+numpy>=2.3,<3.0
