@@ -11,6 +11,8 @@ public sealed class HealthGridDbContext(DbContextOptions<HealthGridDbContext> op
 {
     public DbSet<District> Districts => Set<District>();
     public DbSet<Phc> Phcs => Set<Phc>();
+    public DbSet<UserPhcMembership> UserPhcMemberships => Set<UserPhcMembership>();
+    public DbSet<RefreshToken> RefreshTokens => Set<RefreshToken>();
     public DbSet<Medicine> Medicines => Set<Medicine>();
     public DbSet<Disease> Diseases => Set<Disease>();
     public DbSet<Specialization> Specializations => Set<Specialization>();
@@ -40,6 +42,10 @@ public sealed class HealthGridDbContext(DbContextOptions<HealthGridDbContext> op
         modelBuilder.Entity<District>().HasIndex(x => x.Code).IsUnique();
         modelBuilder.Entity<Phc>().HasIndex(x => new { x.DistrictId, x.Code }).IsUnique();
         modelBuilder.Entity<Phc>().HasOne(x => x.District).WithMany(x => x.Phcs).HasForeignKey(x => x.DistrictId).OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity<UserPhcMembership>().HasIndex(x => new { x.UserId, x.PhcId }).IsUnique();
+        modelBuilder.Entity<UserPhcMembership>().HasIndex(x => new { x.DistrictId, x.PhcId });
+        modelBuilder.Entity<RefreshToken>().HasIndex(x => x.TokenHash).IsUnique();
+        modelBuilder.Entity<RefreshToken>().HasIndex(x => new { x.UserId, x.ExpiresAtUtc });
         modelBuilder.Entity<Medicine>().HasIndex(x => new { x.Name, x.GenericName }).IsUnique();
         modelBuilder.Entity<Disease>().HasIndex(x => x.Code).IsUnique();
         modelBuilder.Entity<Patient>().HasIndex(x => new { x.DistrictId, x.PhcId, x.LocalIdentifier }).IsUnique();

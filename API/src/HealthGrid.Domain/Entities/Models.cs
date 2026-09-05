@@ -28,6 +28,22 @@ public sealed class Phc : Entity
     public District? District { get; set; }
 }
 
+public sealed class UserPhcMembership : Entity
+{
+    public Guid UserId { get; set; }
+    public Guid DistrictId { get; set; }
+    public Guid PhcId { get; set; }
+    public bool IsActive { get; set; } = true;
+}
+
+public sealed class RefreshToken : Entity
+{
+    public Guid UserId { get; set; }
+    public required string TokenHash { get; set; }
+    public DateTime ExpiresAtUtc { get; set; }
+    public DateTime? RevokedAtUtc { get; set; }
+}
+
 public sealed class Medicine : Entity
 {
     public required string Name { get; set; }
