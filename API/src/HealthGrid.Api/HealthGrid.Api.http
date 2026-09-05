@@ -1,6 +1,0 @@
-@HealthGrid.Api_HostAddress = http://localhost:5030
-
-GET {{HealthGrid.Api_HostAddress}}/weatherforecast/
-Accept: application/json
-
-###
